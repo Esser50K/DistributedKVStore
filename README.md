@@ -14,6 +14,11 @@ To retrieve data from the store simply make a GET request specifying which keys 
 curl http://localhost:8080/get?keys=hello,nice
 ```
 
+To delete a keys that was written one can send a DELETE request to the root path (the result will be a list with all the deleted keys)
+```
+curl -X DELETE http://localhost:8080?keys=hello,nice
+```
+
 ## Build
 
 The server is meant to be built and run with Docker but can be done locally.
@@ -37,5 +42,5 @@ python3 main.py
 
 Or using Docker with:
 ```
-docker run -it -p8080:8080 store
+docker run -it -p8080:8080 -v ./data:/data -e PERSIST_DIR=/data store
 ```

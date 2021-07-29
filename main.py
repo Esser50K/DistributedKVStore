@@ -59,7 +59,32 @@ def get_values():
     return jsonify(out)
 
 
+@app.route("/", methods=[DELETE])
+def delete():
+    if len(request.args) == 0:
+        return BadRequest("no query params given")
+
+    if "keys" not in request.args.keys():
+        return BadRequest("mandatory 'keys' query param not specified")
+
+    keys = request.args["keys"].split(",")
+    out = []
+    for key in keys:
+        if key not in store.keys():
+            continue
+
+        del store[key]
+        persistence_queue.put({key: None})
+        out.append(key)
+
+    return jsonify(out)
+
+
 def write(key, value):
+    if value is None and os.path.exists(persist_dir + "/" + key):
+        os.remove(persist_dir + "/" + key)
+        return
+
     tmp_filename = persist_dir + "/key_"+str(int(time()))
     with open(tmp_filename, "w") as f:
         f.write(value)
